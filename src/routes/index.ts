@@ -1,0 +1,23 @@
+import addRoute from "../helpers/RouteHandler";
+import sendJson from "../helpers/sendJson";
+
+addRoute('GET', '/', (req, res) => {
+    // res.writeHead(200, { "content-type": "application/json" });
+    // res.end(
+    //   JSON.stringify({
+    //     message: "Hello from nodejs with typescript",
+    //     path: req.url,
+    //   })
+    // );
+    sendJson(res, 200, {
+        message: "Hello from nodejs with typescript",
+        path: req.url,
+    });
+})
+
+addRoute('GET', '/api', (req, res) => {
+    sendJson(res, 200, {
+        message: "health status ok",
+        path: req.url,
+    });
+})
