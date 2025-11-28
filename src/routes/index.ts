@@ -1,3 +1,4 @@
+import { readUsers, writeUsers } from "../helpers/fileDb";
 import perseBody from "../helpers/perseBody";
 import addRoute from "../helpers/RouteHandler";
 import sendJson from "../helpers/sendJson";
@@ -25,9 +26,18 @@ addRoute('GET', '/api', (req, res) => {
 
 addRoute('POST', '/api/users', async (req, res) => {
     const body = await perseBody(req);
+
+    const users = readUsers();
+    const newUser = {
+        id: new Date().toLocaleString(),
+        ...body,
+    }
+    users.push(newUser);
+    writeUsers(users);
+
     sendJson(res, 201, {
         message: "User created",
         path: req.url,
-        ...body,
+        data: newUser
     });
 })
