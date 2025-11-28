@@ -1,3 +1,4 @@
+import perseBody from "../helpers/perseBody";
 import addRoute from "../helpers/RouteHandler";
 import sendJson from "../helpers/sendJson";
 
@@ -19,5 +20,14 @@ addRoute('GET', '/api', (req, res) => {
     sendJson(res, 200, {
         message: "health status ok",
         path: req.url,
+    });
+})
+
+addRoute('POST', '/api/users', async (req, res) => {
+    const body = await perseBody(req);
+    sendJson(res, 201, {
+        message: "User created",
+        path: req.url,
+        ...body,
     });
 })
