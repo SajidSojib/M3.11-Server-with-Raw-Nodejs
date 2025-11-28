@@ -29,7 +29,7 @@ addRoute('POST', '/api/users', async (req, res) => {
 
     const users = readUsers();
     const newUser = {
-        id: new Date().toLocaleString(),
+        id: users.length + 1,
         ...body,
     }
     users.push(newUser);
@@ -39,5 +39,34 @@ addRoute('POST', '/api/users', async (req, res) => {
         message: "User created",
         path: req.url,
         data: newUser
+    });
+})
+
+addRoute('PUT', '/api/users/:id', async (req, res) => {
+    const { id } = (req as any).params;
+    const body = await perseBody(req);
+
+    const users = readUsers();
+    // console.log(id);
+    console.log(users);
+    const userIndex = users.findIndex((user:any) => user.id == id);
+    // console.log(userIndex);
+    if(userIndex === -1) {
+        sendJson(res, 404, {
+            message: "User not found",
+            path: req.url,
+        });
+        return;
+    }
+    users[userIndex] = {
+        ...users[userIndex],
+        ...body,
+    }
+    writeUsers(users);
+
+    sendJson(res, 202, {
+        message: "User updated",
+        path: req.url,
+        data: users[userIndex]
     });
 })
