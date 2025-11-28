@@ -1,9 +1,34 @@
 import http, { IncomingMessage, Server, ServerResponse } from "http";
 import config from "./config";
+import addRoute, { RouteHandler, routes } from "./helpers/RouteHandler";
+
+
+addRoute('GET', '/', (req, res) => {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(
+      JSON.stringify({
+        message: "Hello from nodejs with typescript",
+        path: req.url,
+      })
+    );
+})
 
 const server:Server = http.createServer((req:IncomingMessage, res:ServerResponse) => {
     console.log('server running...');
 
+    const method = req.method?.toUpperCase() || '';
+    const path = req.url || '';
+    const methodMap = routes.get(method);
+    const handler:RouteHandler | undefined = methodMap?.get(path);
+
+    if(handler) {
+        handler(req, res);
+    }else {
+        res.writeHead(404, {'content-type': 'application/json'});
+        res.end(JSON.stringify({message: 'Route not found', path: req.url}));
+    }
+
+    /*
     if(req.url === '/' && req.method === 'GET') {
         res.writeHead(200, {'content-type': 'application/json'});
         res.end(JSON.stringify({message: 'Hello from nodejs with typescript', path: req.url}));
@@ -34,7 +59,7 @@ const server:Server = http.createServer((req:IncomingMessage, res:ServerResponse
           const perseBody = JSON.parse(body);
           // res.end(perseBody)                    //! error
           res.end(JSON.stringify(perseBody));
-          
+
         } catch (err:any) {
           res.statusCode = 400;
           res.end(err?.message);
@@ -43,6 +68,7 @@ const server:Server = http.createServer((req:IncomingMessage, res:ServerResponse
 
         // res.end(body)   //? empty
     }
+    */    
 })
 
 server.listen(config.port, () => {
